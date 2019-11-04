@@ -17,9 +17,13 @@ pip install -e ffd-tf2
 
 ## Running
 
+CLI is handled in [kblocks](https://github.com/jackd) which is a thin wrapper around [gin-config](https://github.com/google/gin-config). If you're new to [gin](https://github.com/google/gin-config) it might be a bit intimidating, but for rapid prototyping I'm yet to find anything remotely close.
+
 ```bash
 cd ffd-tf2/configs
+# default synset is telephone
 python -m kblocks '$KB_CONFIG/fit' base.gin
+python -m kblocks '$KB_CONFIG/fit' entropy.gin --bindings='synset="plane"'
 ```
 
 ## Reference
