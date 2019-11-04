@@ -1,0 +1,7 @@
+# git+git://github.com/jackd/kblocks.git
+gin-config
+scipy
+numpy
+trimesh
+tensorflow-datasets
+networkx

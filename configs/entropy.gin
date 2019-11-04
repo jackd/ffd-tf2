@@ -1,0 +1,7 @@
+include 'base.gin'
+
+get_ffd_model.prob_entropy_regularizer = @prob/AnnealedRegularizer()
+prob/AnnealedRegularizer.base = @EntropyRegularizer()
+EntropyRegularizer.factor = 100
+
+arch_id = 'entropy'

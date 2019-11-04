@@ -1,0 +1,7 @@
+import ffdnet.losses
+include 'base.gin'
+
+prob_shift = 1e-4
+WeightedChamfer.weighting = 'entropy'
+
+arch_id = 'log-weighted'

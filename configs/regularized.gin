@@ -1,0 +1,7 @@
+include 'base.gin'
+
+get_ffd_model.prob_entropy_regularizer = @ffd_reg/AnnealedRegularizer()
+ffd_reg/AnnealedRegularizer.base = @tf.keras.regularizers.l2()
+tf.keras.regularizers.l2.l = 1.0
+
+arch_id = 'regularized'

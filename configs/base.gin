@@ -1,0 +1,40 @@
+import kblocks.keras_configurables
+import kblocks.framework.steps
+
+import ffdnet.models
+import ffdnet.gin_utils
+import ffdnet.templates
+import ffdnet.problems.r2n2
+import ffdnet.regularizers
+
+model_dir = @get_model_dir()
+synset_id = @get_synset_id()
+get_synset_id.synset = %synset
+
+get_default_decompositions_file.cache_dir = %root_dir
+get_default_decompositions = %root_dir
+get_model_dir.root_dir = %root_dir
+get_model_dir.subdir = 'models'
+get_model_dir.arch_id = %arch_id
+get_model_dir.synset_id = %synset_id
+R2n2Problem.synset = %synset_id
+
+root_dir = '~/ffdnet'
+
+optimizer_fn = @tf.keras.optimizers.Adam
+Adam.learning_rate = 1e-3
+
+model_fn = @get_ffd_model
+get_ffd_model.ffd_data = @get_default_decompositions()
+get_ffd_model.prob_shift = %prob_shift
+get_default_decompositions.synset_id = %synset_id
+
+problem = @R2n2Problem()
+batch_size = 32
+AnnealedRegularizer.anneal_steps = 10000
+
+total_train_steps = 100000
+prob_shift = 0.1  # \eps_{\gamma}
+synset = 'telephone'
+
+arch_id = 'base'
