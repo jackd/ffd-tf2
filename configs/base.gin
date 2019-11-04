@@ -11,15 +11,17 @@ model_dir = @get_model_dir()
 synset_id = @get_synset_id()
 get_synset_id.synset = %synset
 
-get_default_decompositions_file.cache_dir = %root_dir
-get_default_decompositions = %root_dir
-get_model_dir.root_dir = %root_dir
+get_default_decompositions_file.cache_dir = %ffd_dir
+get_default_decompositions = %ffd_dir
+get_model_dir.root_dir = %ffd_dir
 get_model_dir.subdir = 'models'
 get_model_dir.arch_id = %arch_id
 get_model_dir.synset_id = %synset_id
 R2n2Problem.synset = %synset_id
+R2n2Problem.data_dir = %data_dir
 
-root_dir = '~/ffdnet'
+data_dir = None  # currently defaults to `~/tensorflow_datasets`
+ffd_dir = '~/ffdnet'
 
 optimizer_fn = @tf.keras.optimizers.Adam
 Adam.learning_rate = 1e-3

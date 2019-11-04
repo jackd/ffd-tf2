@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from typing import Callable, Optional
 import gin
 import tensorflow as tf
 
@@ -14,18 +15,33 @@ from ffdnet.metrics import ArgmaxChamfer
 @gin.configurable(module='ffdnet')
 class R2n2Problem(TfdsProblem):
 
-    def __init__(self,
-                 num_points=1024,
-                 num_dims=3,
-                 synset='plane',
-                 loss=None,
-                 metrics=None,
-                 image_preprocessor=tf.keras.applications.mobilenet_v2.
-                 preprocess_input):
+    def __init__(
+            self,
+            num_points: int = 1024,
+            num_dims: int = 3,
+            synset: str = 'plane',
+            loss: Optional[tf.keras.losses.Loss] = None,
+            metrics=None,
+            image_preprocessor: Optional[Callable[[tf.Tensor], tf.Tensor]] = tf.
+            keras.applications.mobilenet_v2.preprocess_input,
+            data_dir=None):
+        """
+        Args:
+            num_points: number of points expected to be inferred.
+            num_dims: dimension of points (only 3 currently supported).
+            synset: name of id of category.
+            loss: loss used in `model.compile`. Defaults to `WeightedChamfer`
+            metrics: metrics used by `model.compile`. Defaults to
+                `ArgmaxChamfer`.
+            image_preprocessor: Optional mapping function applied to image.
+            data_dir: where to store data for tensorflow_datasets. Defaults to
+                `~/tensorflow_datasets`.
+        """
         self._image_preprocessor = image_preprocessor
         builder = sds_r2n2.ShapenetR2n2Cloud(
             config=sds_r2n2.ShapenetR2n2CloudConfig(num_points=num_points,
-                                                    synset=synset))
+                                                    synset=synset),
+            data_dir=data_dir)
         if loss is None:
             loss = WeightedChamfer(num_dims=num_dims)
         if metrics is None:
@@ -50,7 +66,8 @@ class R2n2Problem(TfdsProblem):
             else:
                 i = 0
             image = tf.cast(renderings['image'][i], tf.float32)
-            image = self._image_preprocessor(image)
+            if self._image_preprocessor is not None:
+                image = self._image_preprocessor(image)
             return image, labels
 
         return base.map(map_fn, tf.data.experimental.AUTOTUNE)
