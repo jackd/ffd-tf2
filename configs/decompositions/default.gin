@@ -1,0 +1,15 @@
+# Required macros:
+# - ffd_dir
+# - synset_id
+# - control_dims
+
+# Defines macros:
+# - DECOMPOSERS
+
+import ffdnet.templates
+
+decomposers/singleton.constructor = @get_default_decomposers
+get_default_decomposers.synset_id = %synset_id
+get_default_decomposers.control_dims = %control_dims
+get_default_decomposers.cache_dir = %ffd_dir
+DECOMPOSERS = @decomposers/singleton()

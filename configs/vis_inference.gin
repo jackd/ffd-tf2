@@ -1,0 +1,17 @@
+import ffdnet.vis
+Deformer.model_dir = %model_dir
+cloud_mesh_decompositions.decomposers = %DECOMPOSERS
+Deformer.mesh_decomps = @cloud_mesh_decompositions()
+Deformer.problem = %problem
+Deformer.model_fn = %model_fn
+
+vis_all.deformer = @Deformer()
+vis_all.split = %split
+vis_all.shuffle = %shuffle
+vis_all.learning_phase = %learning_phase
+
+learning_phase = 0
+shuffle = True
+split = 'train'
+
+kb.main.fn = @vis_all

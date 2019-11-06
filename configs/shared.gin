@@ -1,0 +1,4 @@
+import ffdnet.gin_utils
+
+synset_id = @get_synset_id()
+get_synset_id.synset = %synset

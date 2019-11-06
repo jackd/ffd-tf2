@@ -54,6 +54,12 @@ class R2n2Problem(TfdsProblem):
                                           as_supervised=True,
                                           outputs_spec=outputs_spec)
 
+    def preprocess_image(self, image):
+        image = tf.cast(image, tf.float32)
+        if self._image_preprocessor is not None:
+            image = self._image_preprocessor(image)
+        return image
+
     def _get_base_dataset(self, split):
         base = super(R2n2Problem, self)._get_base_dataset(split)
 
@@ -65,9 +71,26 @@ class R2n2Problem(TfdsProblem):
                                       dtype=tf.int64)
             else:
                 i = 0
-            image = tf.cast(renderings['image'][i], tf.float32)
-            if self._image_preprocessor is not None:
-                image = self._image_preprocessor(image)
+            image = renderings['image'][i]
+            image = self.preprocess_image(image)
             return image, labels
 
         return base.map(map_fn, tf.data.experimental.AUTOTUNE)
+
+
+@gin.configurable(module='ffdnet')
+def vis_example(image, cloud):
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import trimesh
+    if hasattr(image, 'numpy'):
+        image = image.numpy()
+    if hasattr(cloud, 'numpy'):
+        cloud = cloud.numpy()
+    image -= np.min(image)
+    image /= np.max(image)
+    plt.imshow(image)
+    plt.show()
+    colors = np.empty((cloud.shape[0], 4), dtype=np.uint8)
+    colors[:] = [0, 0, 255, 255]
+    trimesh.PointCloud(cloud, colors=colors).show()

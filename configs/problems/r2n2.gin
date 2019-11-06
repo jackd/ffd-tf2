@@ -1,0 +1,8 @@
+import ffdnet.problems.r2n2
+
+R2n2Problem.synset = %synset_id
+R2n2Problem.data_dir = %data_dir
+
+data_dir = None  # currently defaults to `~/tensorflow_datasets`
+
+problem = @R2n2Problem()

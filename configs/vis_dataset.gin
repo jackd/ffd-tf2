@@ -1,0 +1,5 @@
+include '$KB_CONFIG/run_problem.gin'
+include 'problems/r2n2.gin'
+include 'shared.gin'
+callback = @ffdnet.vis_example
+synset = 'plane'

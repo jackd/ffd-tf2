@@ -1,0 +1,40 @@
+import kblocks.keras_configurables
+import kblocks.framework.steps
+
+import ffdnet.models
+import ffdnet.regularizers
+
+include '../problems/r2n2.gin'
+include '../decompositions/default.gin'
+include '../shared.gin'
+
+model_dir = @get_model_dir()
+
+get_model_dir.root_dir = %ffd_dir
+get_model_dir.subdir = 'models'
+get_model_dir.arch_id = %arch_id
+get_model_dir.synset_id = %synset_id
+
+ffd_dir = '~/ffdnet'
+
+cloud_decompositions.decomposers = %DECOMPOSERS
+cloud_decompositions.num_points = %num_template_points
+get_ffd_model.cloud_decomp = @cloud_decompositions()
+
+optimizer_fn = @tf.keras.optimizers.Adam
+Adam.learning_rate = 1e-3
+
+model_fn = @get_ffd_model
+get_deformation_params.prob_shift = %prob_shift
+
+batch_size = 32
+AnnealedRegularizer.anneal_steps = %anneal_steps
+anneal_steps = 10000
+
+num_template_points = 4096
+control_dims = (3, 3, 3)
+total_train_steps = 100000
+prob_shift = 0.1  # \eps_{\gamma}
+synset = 'telephone'
+
+arch_id = 'base'

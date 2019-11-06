@@ -2,18 +2,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from absl import logging
 import numpy as np
 import tensorflow as tf
 
 try:
     from pykdtree.kdtree import KDTree
 except ImportError:
-    raise ImportError(
-        'Failed to import pykdtree. Please follow instructions at '
+    from scipy.spatial import cKDTree as KDTree
+    logging.warning(
+        'Failed to import pykdtree, so falling back to scipy.spatial.cKDTree -'
+        ' performance may suffer. Consider following instructions at '
         'https://github.com/storpipfugl/pykdtree, e.g. '
         '`conda install -c conda-forge pykdtree` ')
-# alternative implementation
-# from scipy.spatial import cKDTree as KDTree
 
 
 def check_multi_chamfer_shapes(y_true, y_pred, batch_dims=1):
@@ -157,15 +158,29 @@ def argmax_chamfer(y_true, y_pred, probs_pred, mean_over_num_points=False):
 def deform_ffd(args):
     """
     Args:
-        b: [T, N, C]
-        p: [T, C, D]
-        dp: [B, T, C, D]
+        decomp: [T, N, C]
+        control_points: [T, C, D]
+        control_point_shifts: [B, T, C, D]
 
     Returns:
         [B, T, N, D] deformed points.
     """
     b, p, dp = args
     return tf.einsum('ijk,likm->lijm', b, p + dp)
+
+
+def deform_ffd_single(args):
+    """
+    Args:
+        decomp: [B, N, C]
+        control_points: [B, C, D]
+        control_point_shifts: [B, C, D]
+
+    Returns:
+        [B, N, D] deformed points
+    """
+    decomp, control_points, control_point_shifts = args
+    return tf.matmul(decomp, control_points + control_point_shifts)
 
 
 def split_outputs(merged_outputs, num_dims=3):
