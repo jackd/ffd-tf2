@@ -7,7 +7,8 @@ from typing import Callable, Union, Tuple, Optional, NamedTuple, Iterable
 import gin
 import numpy as np
 import tensorflow as tf
-from kblocks import layers
+from kblocks.keras import applications
+from kblocks.keras import layers
 
 from ffdnet import ops
 from ffdnet.templates import Decomposer
@@ -58,8 +59,7 @@ def mobilenet_encoder(image: tf.Tensor,
 
     # create model then call with image
     # This means input_shape doesn't have to be the same as image.shape
-    fn = (tf.keras.applications.MobileNetV2
-          if v2 else tf.keras.applications.MobileNet)
+    fn = applications.MobileNetV2 if v2 else applications.MobileNet
     model = fn(
         alpha=alpha,
         input_shape=(weights_size, weights_size, 3),
@@ -166,7 +166,6 @@ def get_ffd_model(
         ffd_fn: function mapping
             (image, num_templates, num_control_points, num_dims) ->
             (probs, dp). See `get_deformation_params` for example.
-        argmax_only: determines model outputs (see below)
 
     Returns:
         keras Model merged outputs of shape [B, T, N * D + 1]
@@ -194,4 +193,5 @@ def get_ffd_model(
     clouds = tf.keras.layers.Lambda(ops.deform_ffd, name='clouds')(
         [decomp, control_points, control_point_shifts])
     outputs = ops.merge_outputs(clouds, probs)
-    return tf.keras.Model(inputs=image, outputs=outputs)
+    model = tf.keras.Model(inputs=image, outputs=outputs)
+    return model

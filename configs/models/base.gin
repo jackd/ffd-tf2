@@ -10,6 +10,8 @@ include '../shared.gin'
 
 model_dir = @get_model_dir()
 
+tf.keras.layers.BatchNormalization.momentum = 0.9
+
 get_model_dir.root_dir = %ffd_dir
 get_model_dir.subdir = 'models'
 get_model_dir.arch_id = %arch_id
